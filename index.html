@@ -132,9 +132,14 @@
           display:grid; place-items:center; box-shadow:0 10px 24px rgba(23,71,181,.35); border:4px solid var(--bg); }
   #mais svg { width:24px; height:24px; stroke-width:2; }
 
-  #folha { position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.2); display:none; align-items:flex-end; }
-  #folha.on { display:flex; }
-  #folha .painel { width:100%; border-radius:30px 30px 0 0; padding:22px 18px calc(var(--base) + 22px); display:grid; gap:14px; animation:sobe .3s ease; }
+  .cards { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px 8px; padding:18px 10px; border-radius:24px; background:var(--card); }
+  .cards button { display:grid; justify-items:center; gap:6px; font-size:12px; color:var(--sub); min-width:0; }
+  .cards .bola { width:58px; height:58px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; font-size:18px; letter-spacing:-.02em; background:linear-gradient(140deg, var(--verde2), var(--verde)); box-shadow:0 8px 18px rgba(23,71,181,.22); }
+  .cards b { color:var(--tx, #111); font-size:13px; font-weight:600; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #folhaC .lista { max-height:55vh; overflow-y:auto; }
+  #folha, #folhaC { position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.2); display:none; align-items:flex-end; }
+  #folha.on, #folhaC.on { display:flex; }
+  #folha .painel, #folhaC .painel { width:100%; border-radius:30px 30px 0 0; padding:22px 18px calc(var(--base) + 22px); display:grid; gap:14px; animation:sobe .3s ease; }
   @keyframes sobe { from { transform:translateY(40px); opacity:0; } }
   #folha .ex { display:flex; gap:8px; flex-wrap:wrap; }
   #folha .ex button { font-size:12px; color:var(--verde); padding:7px 11px; border-radius:12px; background:var(--claro); }
@@ -171,6 +176,7 @@
     <button data-ir="agenda"><span><svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Agenda</button>
     <button data-ir="rel"><span><svg class="i" viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg></span>Análise</button></div>
   <div class="contas" id="contas"></div>
+  <div><div class="cab" style="margin:0 4px 10px"><h2>Cartões</h2></div><div class="cards" id="cards"></div></div>
   <div><div class="cab" style="margin:0 4px 10px"><h2>Últimos lançamentos</h2><button class="linkBt" data-ir="lanc">Ver tudo →</button></div>
     <div class="lista" id="ultimos"></div></div>
   <div><div class="cab" style="margin:0 4px 10px"><h2>Próximos vencimentos</h2><button class="linkBt" data-ir="agenda">Agenda →</button></div>
@@ -224,6 +230,12 @@
   <button class="btPri" id="salvar">Salvar</button>
 </div></div>
 
+<div id="folhaC"><div class="painel vidro">
+  <div class="cab" style="margin:0"><div><h1 style="font-size:22px" id="cNome"></h1><div class="sub" id="cInfo"></div></div><button class="linkBt" id="fecharC">Fechar</button></div>
+  <div class="hero" id="cTotal" style="font-size:34px"></div>
+  <div class="lista" id="cItens"></div>
+</div></div>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxNpFWczNkLQDocwOsRUT7JLKQahPh6LId1czQULDdkB4-vLmcZw_PhX6U3fuGtjfg/exec";
 const COR = ["#0b2463", "#1747b5", "#2f6fe4", "#5b93f0", "#8fb4f5", "#b9d0f8", "#d6e3fb", "#e7eefb"];
@@ -262,6 +274,7 @@ function linha(l) {
 const lista = html => `<div class="lista">${html}</div>`;
 
 function render() {
+  renderCartoes();
   $$(".nomeMes").forEach(e => e.textContent = nomeMes(mes));
   $("ola").textContent = saud();
   const base = D.filter(l => !conta || l.conta === conta);
@@ -326,12 +339,29 @@ function render() {
   $("varp").textContent = fix + vr ? Math.round(vr / (fix + vr) * 100) + "% das saídas" : "";
 }
 
+let C = JSON.parse(ls.get("cartoes") || "[]");
+function renderCartoes() {
+  $("cards").innerHTML = C.map((c, i) => `<button data-card="${i}"><span class="bola">${esc(c.nome.slice(0, 2))}</span><b>${esc(cap(c.nome.toLowerCase()))}</b><small>${brl(c.total || c.itens.reduce((s, x) => s + x.valor, 0))}</small></button>`).join("") || '<small style="grid-column:1/-1;text-align:center;color:var(--sub)">Sem cartões</small>';
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-card]");
+  if (b) { const c = C[b.dataset.card];
+    $("cNome").textContent = cap(c.nome.toLowerCase());
+    $("cInfo").textContent = [c.fatura && "Fatura " + c.fatura, c.venc && "vence " + c.venc, c.itens.length + " compras"].filter(Boolean).join(" · ");
+    $("cTotal").innerHTML = brlHero(c.total || c.itens.reduce((s, x) => s + x.valor, 0));
+    $("cItens").innerHTML = c.itens.map(x => `<div class="item"><div class="meio"><b>${esc(x.desc)}</b><small>${esc(x.data)}${x.cat ? " · " + esc(x.cat) : ""}</small></div><div class="dir"><span class="v">${brl(x.valor)}</span><small>${esc(x.parcela)}</small></div></div>`).join("");
+    $("folhaC").classList.add("on"); }
+  if (e.target.id === "fecharC" || e.target.id === "folhaC") $("folhaC").classList.remove("on");
+});
+
 async function carregar() {
   if (!KEY) return;
   $("atual").style.display = "block";
   try {
     D = await (await fetch(`${API}?formato=json&k=${encodeURIComponent(KEY)}`)).json();
     ls.set("dados", JSON.stringify(D)); render(); $("atual").style.display = "none";
+    C = await (await fetch(`${API}?cartoes=1&k=${encodeURIComponent(KEY)}`)).json();
+    if (Array.isArray(C)) { ls.set("cartoes", JSON.stringify(C)); renderCartoes(); } else C = [];
   } catch (e) { $("atual").textContent = "Sem conexão · últimos dados"; setTimeout(() => $("atual").style.display = "none", 2500); }
 }
 
