@@ -13,14 +13,14 @@
 <title>Financeiro</title>
 <style>
   :root { --bg:#000; --card:rgba(255,255,255,.07); --card2:rgba(255,255,255,.11); --borda:rgba(255,255,255,.1);
-          --txt:#f5f5f7; --sub:#8e8e93; --verde:#30d158; --verm:#ff453a; --azul:#0a84ff; --amar:#ffd60a;
+          --txt:#f5f5f7; --sub:#8e8e93; --verde:#3ddc84; --verm:#ff5c5c; --azul:#3ddc84; --amar:#ffd60a;
           --topo:env(safe-area-inset-top); --base:env(safe-area-inset-bottom); }
   * { box-sizing:border-box; margin:0; -webkit-tap-highlight-color:transparent; }
   html, body { background:var(--bg); color:var(--txt); height:100%; overflow:hidden;
          font:16px/1.35 -apple-system, "SF Pro Text", Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
   body::before { content:""; position:fixed; inset:0; z-index:-1;
-         background:radial-gradient(700px 420px at 15% -5%, #16305e 0%, transparent 60%),
-                    radial-gradient(600px 400px at 110% 20%, #33204d 0%, transparent 55%); }
+         background:radial-gradient(700px 420px at 15% -5%, #0f3b2a 0%, transparent 60%),
+                    radial-gradient(600px 400px at 110% 20%, #13261f 0%, transparent 55%); }
   button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
   .tela { position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
           padding:calc(var(--topo) + 12px) 16px calc(var(--base) + 96px); display:none; }
@@ -71,15 +71,32 @@
   .leg i { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; }
   .vazio { color:var(--sub); padding:10px 0; text-align:center; }
   .tag { font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; background:rgba(255,214,10,.15); color:var(--amar); margin-left:6px; }
-  nav { position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:space-around;
-        padding:8px 8px calc(var(--base) + 6px); background:rgba(20,20,22,.72); border-top:1px solid var(--borda);
+  nav { position:fixed; left:16px; right:16px; bottom:calc(var(--base) + 10px); max-width:420px; margin:0 auto;
+        display:flex; justify-content:space-around; padding:8px; border-radius:30px;
+        background:rgba(28,28,30,.78); border:1px solid var(--borda); box-shadow:0 10px 30px rgba(0,0,0,.5);
         backdrop-filter:blur(30px) saturate(180%); -webkit-backdrop-filter:blur(30px) saturate(180%); }
   nav button { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:600;
                color:var(--sub); flex:1; padding:4px 0; }
-  nav button.on { color:var(--azul); }
-  nav svg { width:26px; height:26px; }
+  nav button.on { color:#000; background:var(--verde); border-radius:22px; }
+  nav svg { width:22px; height:22px; }
   .atual { position:fixed; top:calc(var(--topo) + 8px); left:50%; transform:translateX(-50%); font-size:12px; color:var(--sub);
            background:var(--card); padding:4px 10px; border-radius:10px; display:none; }
+  .heroCard { background:linear-gradient(145deg, #12392b, #0b1f18); border:1px solid rgba(61,220,132,.18); border-radius:26px; padding:20px; }
+  .acoes { display:flex; justify-content:space-between; margin-top:18px; }
+  .acoes button { display:flex; flex-direction:column; align-items:center; gap:6px; font-size:12px; color:var(--sub); flex:1; }
+  .acoes span { width:48px; height:48px; border-radius:24px; display:grid; place-items:center; font-size:20px; background:rgba(255,255,255,.1); }
+  .acoes button:first-child span { background:var(--verde); }
+  .contas { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cc { border-radius:22px; padding:16px; color:#0b0b0b; min-height:118px; display:flex; flex-direction:column; justify-content:space-between; }
+  .cc .rot { color:rgba(0,0,0,.55); } .cc .val { color:#0b0b0b; } .cc small { color:rgba(0,0,0,.6); font-size:12px; font-weight:600; }
+  .semana { display:flex; align-items:flex-end; gap:8px; height:120px; margin-top:14px; }
+  .semana div { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .semana i { width:100%; border-radius:8px; min-height:4px; background:rgba(255,255,255,.14); }
+  .semana i.hoje { background:var(--verde); }
+  .semana span { color:var(--sub); font-size:11px; }
+  .rosca { width:170px; height:170px; border-radius:50%; margin:16px auto 4px; position:relative; }
+  .rosca::after { content:""; position:absolute; inset:22px; border-radius:50%; background:#0d0d0f; }
+  .rosca b { position:absolute; inset:0; display:grid; place-items:center; z-index:1; font-size:18px; text-align:center; line-height:1.2; }
   .erro { text-align:center; padding:40px 16px; color:var(--sub); }
 </style>
 </head>
@@ -90,12 +107,14 @@
   <div class="cab"><div><div class="sub" id="ola"></div><h1>Início</h1></div>
     <div class="mes"><button data-m="-1">‹</button><span class="nomeMes"></span><button data-m="1">›</button></div></div>
   <div class="seg conta"><button data-c="" class="on">Tudo</button><button data-c="PF">Pessoal</button><button data-c="PJ">Empresa</button></div>
-  <div class="card"><div class="rot">Saldo do mês</div><div class="hero" id="saldo"></div>
-    <div class="sub">Projetado com previstos: <b id="proj"></b></div></div>
-  <div class="g2">
-    <div class="card"><div class="rot">Entradas</div><div class="val pos" id="ent"></div></div>
-    <div class="card"><div class="rot">Saídas</div><div class="val neg" id="sai"></div></div>
-  </div>
+  <div class="heroCard"><div class="rot">Saldo do mês</div><div class="hero" id="saldo"></div>
+    <div class="sub">Entrou <b class="pos" id="ent"></b> · Saiu <b class="neg" id="sai"></b></div>
+    <div class="sub" style="margin-top:2px">Projetado com previstos: <b id="proj"></b></div>
+    <div class="acoes">
+      <button data-ir="lanc"><span>☰</span>Extrato</button><button data-ir="agenda"><span>📅</span>Agenda</button>
+      <button data-ir="rel"><span>📊</span>Relatórios</button><button id="btBot"><span>💬</span>Lançar</button></div></div>
+  <div class="contas" id="contas"></div>
+  <div class="card"><div class="rot">Gastos dos últimos 7 dias</div><div class="semana" id="semana"></div></div>
   <div class="card"><div class="cab" style="margin:0"><div class="rot">Próximos vencimentos</div>
     <button class="sub" style="color:var(--azul)" data-ir="agenda">Ver tudo</button></div><div id="prox"></div></div>
   <div class="card"><div class="rot">Onde foi o dinheiro</div><div id="topcat"></div></div>
@@ -123,7 +142,7 @@
   <div class="cab"><h1>Relatórios</h1>
     <div class="mes"><button data-m="-1">‹</button><span class="nomeMes"></span><button data-m="1">›</button></div></div>
   <div class="seg conta"><button data-c="" class="on">Tudo</button><button data-c="PF">Pessoal</button><button data-c="PJ">Empresa</button></div>
-  <div class="card"><div class="rot">Gastos por categoria</div><div id="cats"></div></div>
+  <div class="card"><div class="rot">Gastos por categoria</div><div class="rosca" id="rosca"></div><div id="cats"></div></div>
   <div class="card"><div class="rot">Fluxo · 6 meses</div><div class="fluxo" id="fluxo"></div>
     <div class="leg"><span><i style="background:var(--verde)"></i>Entradas</span><span><i style="background:var(--verm)"></i>Saídas</span></div></div>
   <div class="g2">
@@ -145,7 +164,7 @@ const API = "https://script.google.com/macros/s/AKfycbxNpFWczNkLQDocwOsRUT7JLKQa
 const ICO = { "Clientes":"💼", "Pró-labore":"🧾", "Outras entradas":"💰", "Moradia":"🏠", "Alimentação":"🍽️", "Transporte":"🚗",
   "Saúde":"💊", "Lazer":"🎉", "Assinaturas":"📺", "Equipamento":"🎥", "Impostos":"🏛️", "Marketing":"📣", "Dívidas":"💳",
   "Investimento":"📈", "Outros":"📦" };
-const COR = ["#0a84ff", "#5e5ce6", "#bf5af2", "#ff375f", "#ff9f0a", "#30d158", "#64d2ff", "#8e8e93"];
+const COR = ["#3ddc84", "#ffe27a", "#7ab8ff", "#ff8a8a", "#c7a6ff", "#64d2ff", "#ffb35c", "#8e8e93"];
 
 const ls = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
              set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -201,6 +220,17 @@ function render() {
   const top = Object.entries(cats).sort((a, b) => b[1] - a[1]);
   $("topcat").innerHTML = barras(top.slice(0, 4), sai) || `<div class="vazio">Sem gastos neste mês.</div>`;
 
+  const MR0 = D.filter(l => l.data.startsWith(mes) && l.status === "Realizado");
+  $("contas").innerHTML = [["PF", "Pessoal", "#b8f5d0"], ["PJ", "Empresa", "#ffe27a"]].map(([c, n, cor]) => {
+    const X = MR0.filter(l => l.conta === c), e = soma(X, l => l.tipo === "Entrada"), s = soma(X, l => l.tipo === "Saída");
+    return `<div class="cc" style="background:${cor}"><div class="rot">${n}</div><div><div class="val">${brl(e - s)}</div>` +
+      `<small>+${brl(e)} · −${brl(s)}</small></div></div>`; }).join("");
+  const dias7 = [...Array(7)].map((_, i) => ymd(new Date(Date.now() - (6 - i) * 864e5)));
+  const g7 = dias7.map(d => soma(base, l => l.data === d && l.tipo === "Saída" && l.status === "Realizado"));
+  const m7 = Math.max(1, ...g7);
+  $("semana").innerHTML = dias7.map((d, i) => `<div><i class="${d === hoje ? "hoje" : ""}" style="height:${g7[i] / m7 * 100}%" title="${brl(g7[i])}"></i>` +
+    `<span>${new Date(d + "T12:00").toLocaleDateString("pt-BR", { weekday: "narrow" })}</span></div>`).join("");
+
   // Lançamentos
   const q = $("busca").value.trim().toLowerCase();
   const L = D.filter(l => l.data.startsWith(mes) && (!q || (l.desc + l.cat).toLowerCase().includes(q)) &&
@@ -222,6 +252,10 @@ function render() {
     || `<div class="vazio">Nenhuma conta prevista. Mande "vou pagar 1500 de aluguel dia 10" pro bot.</div>`;
 
   // Relatórios
+  let ac = 0;
+  $("rosca").style.background = top.length ? "conic-gradient(" + top.map(([, v], i) => { const a = ac; ac += v / sai * 100;
+    return `${COR[i % COR.length]} ${a}% ${ac}%`; }).join(",") + ")" : "rgba(255,255,255,.08)";
+  $("rosca").innerHTML = `<b>${brl(sai)}<br><small class="sub">gasto</small></b>`;
   $("cats").innerHTML = barras(top, sai) || `<div class="vazio">Sem gastos realizados.</div>`;
   const [a, m] = mes.split("-").map(Number);
   const seis = [...Array(6)].map((_, i) => ym(new Date(a, m - 6 + i, 1)));
@@ -242,7 +276,9 @@ function render() {
 }
 
 async function carregar() {
-  if (!KEY) { document.body.innerHTML = `<div class="erro">Abra o app pelo link com a chave (#k=…).</div>`; return; }
+  if (!KEY) { document.body.innerHTML = `<div class="erro"><h1 style="color:var(--txt)">Financeiro</h1><p style="margin:12px 0">Cole a chave de acesso que o bot te mandou.</p>` +
+    `<input type="search" id="chave" placeholder="Chave" style="margin-bottom:12px"><button id="entrar" style="background:var(--verde);color:#000;font-weight:700;padding:12px 24px;border-radius:14px">Entrar</button></div>`;
+    document.getElementById("entrar").onclick = () => { ls.set("k", document.getElementById("chave").value.trim()); location.reload(); }; return; }
   $("atual").style.display = "block";
   try {
     const r = await fetch(`${API}?formato=json&k=${encodeURIComponent(KEY)}`);
@@ -265,6 +301,7 @@ $$(".conta button").forEach(b => b.onclick = () => { conta = b.dataset.c;
 $$("#filtro button").forEach(b => b.onclick = () => { filtro = b.dataset.f;
   $$("#filtro button").forEach(x => x.classList.toggle("on", x === b)); render(); });
 $("busca").oninput = render;
+$("btBot").onclick = () => location.href = "https://t.me/thalisson_financeiro_bot";
 document.addEventListener("visibilitychange", () => { if (!document.hidden) carregar(); });
 
 render();
