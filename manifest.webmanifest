@@ -2,8 +2,8 @@
   "name": "Anota",
   "short_name": "Anota",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#1747b5",
+  "theme_color": "#1747b5",
   "start_url": "./",
   "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }]
 }
