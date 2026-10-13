@@ -1,0 +1,86 @@
+{
+  "entries": {
+    "cmd-1791916991526": {
+      "key": "cmd-1791916991526",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && rm _teste.html && python3 - <<'EOF'\\np='index.html'; s=open(p,encoding='utf-8').read()\\ns=s.replace('.mes span { min-width:96px; text-align:center; text-transform:capitalize; }','.mes span { min-width:96px; text-align:center; }')\\ns=s.replace('.toLocaleDateString(\\\"pt-BR\\\", curto ? { month: \\\"short\\\" } : { month: \\\"long\\\", year: \\\"numeric\\\" }).replace(\\\".\\\", \\\"\\\");',\\n '.toLocaleDateString(\\\"pt-BR\\\", curto ? { month: \\\"short\\\" } : { month: \\\"long\\\", year: \\\"numeric\\\" }).replace(\\\".\\\", \\\"\\\").replace(/^./, c => c.toUpperCase());')\\nopen(p,'w',encoding='utf-8').write(s); print(s.count('toUpperCase'))\\nEOF\\nls\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T18:43:11.526Z",
+      "lastAccessed": "2026-10-13T18:43:11.526Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T18:43:11.526Z"
+    },
+    "cmd-1791917196528": {
+      "key": "cmd-1791917196528",
+      "value": "{\"command\":\"gh auth status 2>&1 | grep -E \\\"account|Active\\\"\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T18:46:36.528Z",
+      "lastAccessed": "2026-10-13T18:46:36.528Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T18:46:36.528Z"
+    },
+    "cmd-1791917339203": {
+      "key": "cmd-1791917339203",
+      "value": "{\"command\":\"gh auth status 2>&1 | grep -E \\\"account|Active\\\"\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T18:48:59.203Z",
+      "lastAccessed": "2026-10-13T18:48:59.203Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T18:48:59.203Z"
+    },
+    "cmd-1791917449295": {
+      "key": "cmd-1791917449295",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && git init -q -b main && git add index.html manifest.webmanifest icon-180.png icon-512.png && git -c user.name=\\\"thalissonm-essi\\\" -c user.email=\\\"thalisson.m@gmail.com\\\" commit -q -m \\\"App Financeiro\\\" && git log --oneline && git ls-files\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T18:50:49.295Z",
+      "lastAccessed": "2026-10-13T18:50:49.295Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T18:50:49.295Z"
+    },
+    "cmd-1791918424951": {
+      "key": "cmd-1791918424951",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && python3 - <<'EOF'\\np='index.html'; s=open(p,encoding='utf-8').read()\\ndef rep(a,b):\\n    global s\\n    assert a in s, a[:60]; s=s.replace(a,b,1)\\n# cores: verde de destaque\\nrep('--verde:#30d158; --verm:#ff453a; --azul:#0a84ff;', '--verde:#3ddc84; --verm:#ff5c5c; --azul:#3ddc84;')\\nrep('radial-gradient(700px 420px at 15% -5%, #16305e 0%, transparent 60%)', 'radial-gradient(700px 420px at 15% -5%, #0f3b2a 0%, transparent 60%)')\\nrep('radial-gradient(600px 400px at 110% 20%, #33204d 0%, transparent 55%)', 'radial-gradient(600px 400px at 110% 20%, #13261f 0%, transparent 55%)')\\n# barra de abas flutuante (pílula)\\nrep('''  nav { position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:space-around;\\n        padding:8px 8px calc(var(--base) + 6px); background:rgba(20,20,22,.72); border-top:1px solid var(--borda);''',\\n'''  nav { position:fixed; left:16px; right:16px; bottom:calc(var(--base) + 10px); max-width:420px; margin:0 auto;\\n        display:flex; justify-content:space-around; padding:8px; border-radius:30px;\\n        background:rgba(28,28,30,.78); border:1px solid var(--borda); box-shadow:0 10px 30px rgba(0,0,0,.5);''')\\nrep('nav button.on { color:var(--azul); }', 'nav button.on { color:#000; background:var(--verde); border-radius:22px; }')\\nrep('nav svg { width:26px; height:26px; }', 'nav svg { width:22px; height:22px; }')\\n# novos estilos\\nrep('  .erro {', '''  .heroCard { background:linear-gradient(145deg, #12392b, #0b1f18); border:1px solid rgba(61,220,132,.18); border-radius:26px; padding:20px; }\\n  .acoes { display:flex; justify-content:space-between; margin-top:18px; }\\n  .acoes button { display:flex; flex-direction:column; align-items:center; gap:6px; font-size:12px; color:var(--sub); flex:1; }\\n  .acoes span { width:48px; height:48px; border-radius:24px; display:grid; place-items:center; font-size:20px; background:rgba(255,255,255,.1); }\\n  .acoes button:first-child span { background:var(--verde); }\\n  .contas { display:grid; grid …[truncated]\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T19:07:04.951Z",
+      "lastAccessed": "2026-10-13T19:07:04.951Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T19:07:04.951Z"
+    },
+    "cmd-1791918515238": {
+      "key": "cmd-1791918515238",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && rm -f _teste.html && git add index.html && git -c user.name=\\\"thalissonm-essi\\\" -c user.email=\\\"thalisson.m@gmail.com\\\" commit -q -m \\\"Visual novo + tela de chave\\\" && git push -q 2>&1 | tail -2; git log --oneline -1\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T19:08:35.238Z",
+      "lastAccessed": "2026-10-13T19:08:35.238Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T19:08:35.238Z"
+    },
+    "cmd-1791920503622": {
+      "key": "cmd-1791920503622",
+      "value": "{\"command\":\"grep -o 'const API = \\\"[^\\\"]*\\\"' ~/Desktop/FINANCEIRO/APP/index.html\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T19:41:43.622Z",
+      "lastAccessed": "2026-10-13T19:41:43.622Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T19:41:43.622Z"
+    },
+    "cmd-1791920771984": {
+      "key": "cmd-1791920771984",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && python3 - <<'EOF'\\np='index.html'; s=open(p,encoding='utf-8').read()\\nR=[('--bg:#f4f3ee; --card:#fbfaf7; --vidro:rgba(251,250,247,.72); --linha:rgba(28,48,38,.07);','--bg:#f5f5f7; --card:#ffffff; --vidro:rgba(255,255,255,.72); --linha:rgba(0,0,0,.06);'),\\n   ('--verde:#1f4a36; --verde2:#2f6b4f; --claro:#e6ece6; --menta:#cfe3d4;','--verde:#1d1d1f; --verde2:#3a3a3c; --claro:#ececef; --menta:#c7c7cc;'),\\n   ('--txt:#16241c; --sub:#7d867f; --pos:#2f8a5b; --neg:#c2524b;','--txt:#1d1d1f; --sub:#86868b; --pos:#248a3d; --neg:#d70015;'),\\n   ('rgba(22,36,28,.04), 0 10px 30px rgba(22,36,28,.06)','rgba(0,0,0,.04), 0 10px 30px rgba(0,0,0,.06)'),\\n   ('radial-gradient(120% 70% at 80% 100%, #2f6b4f 0%, var(--verde) 55%, #173a2a 100%)','radial-gradient(120% 70% at 80% 100%, #48484a 0%, #1d1d1f 55%, #000 100%)'),\\n   ('rgba(31,74,54,.25)','rgba(0,0,0,.22)'),('rgba(31,74,54,.35)','rgba(0,0,0,.3)'),('rgba(22,36,28,.25)','rgba(0,0,0,.2)'),\\n   ('background:#c9d6cc; }','background:#d1d1d6; }'),\\n   ('<meta name=\\\"theme-color\\\" content=\\\"#f4f3ee\\\">','<meta name=\\\"theme-color\\\" content=\\\"#f5f5f7\\\">'),\\n   ('background:rgba(244,243,238,.82)','background:rgba(245,245,247,.82)'),\\n   ('const COR = [\\\"#1f4a36\\\", \\\"#4f8a6a\\\", \\\"#8fb89c\\\", \\\"#c9d6cc\\\", \\\"#2f6b4f\\\", \\\"#a9c4b0\\\", \\\"#6e9c80\\\", \\\"#dfe7e0\\\"];',\\n    'const COR = [\\\"#1d1d1f\\\", \\\"#48484a\\\", \\\"#6e6e73\\\", \\\"#8e8e93\\\", \\\"#aeaeb2\\\", \\\"#c7c7cc\\\", \\\"#d1d1d6\\\", \\\"#e5e5ea\\\"];'),\\n   ('🌿','✓')]\\nfor a,b in R:\\n    assert a in s, a[:50]; s=s.replace(a,b)\\nopen(p,'w',encoding='utf-8').write(s); print('ok', s.count('#1f4a36'))\\nEOF\\nsed 's/let KEY = hashK || ls.get(\\\"k\\\");/let KEY = \\\"teste\\\";/' index.html > _teste.html\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T19:46:11.984Z",
+      "lastAccessed": "2026-10-13T19:46:11.984Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T19:46:11.984Z"
+    },
+    "cmd-1791920836845": {
+      "key": "cmd-1791920836845",
+      "value": "{\"command\":\"cd ~/Desktop/FINANCEIRO/APP && python3 - <<'EOF'\\np='index.html'; s=open(p,encoding='utf-8').read()\\na='$(\\\"rosca\\\").innerHTML = `<b>${brl(sai)}<br><small class=\\\"sub\\\" style=\\\"font-size:12px;font-weight:400\\\">gasto no mês</small></b>`;'\\nb='$(\\\"rosca\\\").innerHTML = `<b><span>${brl(sai)}<br><small class=\\\"sub\\\" style=\\\"font-size:12px;font-weight:400\\\">gasto no mês</small></span></b>`;'\\nassert a in s; s=s.replace(a,b); open(p,'w',encoding='utf-8').write(s)\\nEOF\\nsed 's/let KEY = hashK || ls.get(\\\"k\\\");/let KEY = \\\"teste\\\";/' index.html > _teste.html\",\"exitCode\":0,\"success\":true}",
+      "namespace": "commands",
+      "storedAt": "2026-10-13T19:47:16.845Z",
+      "lastAccessed": "2026-10-13T19:47:16.845Z",
+      "accessCount": 0,
+      "expiresAt": "2026-11-12T19:47:16.845Z"
+    }
+  },
+  "version": "3.0.0"
+}
