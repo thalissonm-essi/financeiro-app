@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Abastece">
+<meta name="theme-color" content="#f6f4f1">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Abastece</title>
+<style>
+  :root { --bg:#f6f4f1; --card:#ffffff; --vidro:rgba(255,255,255,.72); --linha:rgba(0,0,0,.06);
+          --verde:#d9520b; --verde2:#f57c2b; --claro:#fbeadd; --menta:#ffbf8f;
+          --txt:#1d1d1f; --sub:#86868b; --pos:#248a3d; --neg:#d70015; --alerta:#b26a00;
+          --sombra:0 1px 2px rgba(0,0,0,.04), 0 10px 30px rgba(0,0,0,.06);
+          --topo:env(safe-area-inset-top); --base:env(safe-area-inset-bottom); }
+  * { box-sizing:border-box; margin:0; -webkit-tap-highlight-color:transparent; }
+  html, body { overflow-x:hidden; max-width:100%; background:var(--bg); color:var(--txt); height:100%; overflow:hidden;
+         font:16px/1.4 -apple-system, "SF Pro Text", Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased; letter-spacing:-.01em; }
+  button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  svg.i { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .vidro { background:var(--vidro); border:1px solid rgba(255,255,255,.7); box-shadow:var(--sombra);
+           backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); }
+
+  /* entrada */
+  #entrada { position:fixed; inset:0; z-index:50; background:radial-gradient(120% 70% at 80% 100%, #f57c2b 0%, #8a3a12 45%, #1c1b1a 100%);
+             color:#f4f3ee; display:flex; flex-direction:column; justify-content:space-between;
+             padding:calc(var(--topo) + 28px) 26px calc(var(--base) + 28px); transition:opacity .5s ease, transform .5s ease; }
+  #entrada.sai { opacity:0; transform:translateY(-12px); pointer-events:none; }
+  #entrada .marca { font-size:14px; font-weight:500; opacity:.8; display:flex; align-items:center; gap:8px; }
+  #entrada .marca i { width:26px; height:26px; border-radius:8px; background:rgba(255,255,255,.14); display:grid; place-items:center; font-style:normal; font-size:11px; font-weight:700; }
+  #entrada h1 { font-size:46px; line-height:1.02; font-weight:600; letter-spacing:-.04em; }
+  #entrada h1 span { color:var(--menta); }
+  #entrada p { margin-top:14px; font-size:17px; opacity:.82; max-width:300px; }
+  .moeda { align-self:center; width:200px; height:200px; border-radius:50%; display:grid; place-items:center;
+           background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), rgba(255,255,255,.04) 60%);
+           border:1px solid rgba(255,255,255,.18); color:rgba(244,243,238,.92); box-shadow:inset 0 0 40px rgba(255,255,255,.06); }
+  .moeda svg { width:84px; height:84px; stroke-width:1.2; }
+  #entrada input { width:100%; padding:14px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.2);
+                   background:rgba(255,255,255,.1); color:#fff; font:inherit; outline:none; margin-bottom:12px; }
+  #entrada input::placeholder { color:rgba(255,255,255,.6); }
+  #entrada .erro { color:#ffd2cc; font-size:14px; margin-bottom:10px; min-height:1px; }
+  #btEntrar { width:100%; background:#f4f3ee; color:var(--txt); font-weight:600; padding:17px; border-radius:18px; font-size:17px;
+              display:flex; justify-content:center; align-items:center; gap:8px; }
+
+  .tela { position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+          padding:calc(var(--topo) + 14px) 16px calc(var(--base) + 116px); display:none; }
+  .tela.on { display:block; animation:entra .3s ease; }
+  @keyframes entra { from { opacity:0; transform:translateY(6px); } }
+  .wrap { max-width:560px; margin:0 auto; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; }
+  .wrap > * { min-width:0; }
+  .cab { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:4px; }
+  h1 { font-size:26px; font-weight:600; letter-spacing:-.03em; }
+  h2 { font-size:17px; font-weight:600; letter-spacing:-.02em; }
+  .sub { color:var(--sub); font-size:13px; }
+  .card { background:var(--card); border-radius:24px; padding:18px; box-shadow:var(--sombra); }
+  .rot { color:var(--sub); font-size:13px; }
+  .pos { color:var(--pos); } .neg { color:var(--neg); }
+
+  .saldo { background:linear-gradient(150deg, #2b2a28, #1c1b1a); color:#f4f3ee; border-radius:26px; padding:20px; box-shadow:0 14px 30px rgba(217,82,11,.28); }
+  .saldo .rot { color:rgba(244,243,238,.75); }
+  .hero { font-size:40px; font-weight:600; letter-spacing:-.045em; margin:6px 0 10px; font-variant-numeric:tabular-nums; }
+  .hero small { font-size:22px; opacity:.8; }
+  .pill { display:inline-flex; gap:4px; align-items:center; font-size:12px; font-weight:500; padding:4px 9px; border-radius:10px; background:rgba(255,255,255,.14); }
+  .pill[hidden] { display:none; }
+  .saldo .linha2 { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center; font-size:13px; color:rgba(244,243,238,.8); }
+  .saldo svg.sp { width:100%; height:46px; display:block; margin:4px 0 10px; }
+
+  .veic { appearance:none; -webkit-appearance:none; font:inherit; font-size:14px; font-weight:500; color:var(--verde); background:var(--claro);
+          border:0; border-radius:14px; padding:8px 30px 8px 12px; max-width:60vw;
+          background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9520b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+          background-repeat:no-repeat; background-position:right 8px center; background-size:16px; }
+
+  .g2 { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+  .g3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .val { font-size:20px; font-weight:600; letter-spacing:-.03em; margin-top:4px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .g3 .card { padding:14px; border-radius:20px; } .g3 .val { font-size:17px; }
+  .vazio { color:var(--sub); padding:14px 0; text-align:center; font-size:14px; }
+
+  .item { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--linha); }
+  .item:first-child { border-top:0; }
+  .ico { width:42px; height:42px; border-radius:21px; display:grid; place-items:center; font-size:12px; font-weight:600; flex:none; background:var(--claro); color:var(--verde); }
+  .item .meio { flex:1; min-width:0; }
+  .item .meio b { display:block; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .item .meio small, .item .dir small { color:var(--sub); font-size:12px; }
+  .item .dir { text-align:right; flex:none; }
+  .item .v { font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; display:block; }
+  .tag { font-size:10px; font-weight:600; padding:2px 6px; border-radius:6px; background:#f3e6c8; color:#8a5a00; margin-left:6px; }
+  .tag.atr { background:#f6d9d6; color:var(--neg); }
+  .tag.ok { background:#dcefe1; color:var(--pos); }
+  .lista { background:var(--card); border-radius:22px; padding:4px 16px; box-shadow:var(--sombra); }
+  .linkBt { color:var(--sub); font-size:13px; display:flex; align-items:center; gap:4px; }
+  .dia { color:var(--sub); font-size:12px; font-weight:500; margin:10px 6px 6px; }
+
+  .barra { height:6px; border-radius:3px; background:var(--claro); margin-top:6px; overflow:hidden; }
+  .barra i { display:block; height:100%; border-radius:3px; background:var(--verde); }
+  .barra i.alerta { background:var(--alerta); } .barra i.atr { background:var(--neg); }
+  .dica { display:flex; gap:12px; align-items:center; background:var(--claro); border-radius:20px; padding:14px 16px; font-size:14px; }
+  .dica small { display:block; color:var(--sub); font-size:12px; }
+  .dica.atr { background:#fbe3e0; }
+  .barras { display:flex; align-items:flex-end; gap:10px; height:120px; margin-top:16px; }
+  .barras > div { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; min-width:0; }
+  .barras i { width:100%; max-width:34px; border-radius:8px; min-height:4px; background:#f3cdb1; }
+  .barras i.on { background:var(--verde); }
+  .barras span { color:var(--sub); font-size:11px; }
+  .comb { display:grid; grid-template-columns:1fr auto auto; gap:6px 14px; font-size:14px; font-variant-numeric:tabular-nums; margin-top:10px; }
+  .comb b { font-weight:600; text-align:right; } .comb span { color:var(--sub); text-align:right; }
+
+  nav { position:fixed; left:0; right:0; bottom:0; z-index:10; display:grid; grid-template-columns:1fr 1fr 76px 1fr 1fr; align-items:center;
+        padding:8px 10px calc(var(--base) + 8px); background:rgba(246,244,241,.85); border-top:1px solid var(--linha);
+        backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); }
+  nav button { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:var(--sub); padding:4px 0; }
+  nav button.on { color:var(--txt); }
+  #mais { width:60px; height:60px; border-radius:30px; justify-self:center; margin-top:-26px; background:var(--verde); color:#f4f3ee;
+          display:grid; place-items:center; box-shadow:0 10px 24px rgba(217,82,11,.35); border:4px solid var(--bg); }
+  #mais svg { width:24px; height:24px; stroke-width:2; }
+
+  .folha { position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.2); display:none; align-items:flex-end; }
+  .folha.on { display:flex; }
+  .folha .painel { width:100%; max-height:92%; overflow-y:auto; border-radius:30px 30px 0 0; padding:22px 18px calc(var(--base) + 22px); display:grid; gap:14px; animation:sobe .3s ease; }
+  @keyframes sobe { from { transform:translateY(40px); opacity:0; } }
+  .campo { display:grid; gap:5px; font-size:12px; color:var(--sub); font-weight:500; min-width:0; }
+  .campo input, .campo select { width:100%; padding:13px 14px; border-radius:14px; border:0; background:var(--card); box-shadow:var(--sombra);
+                                color:var(--txt); font:inherit; font-size:16px; outline:none; -webkit-appearance:none; appearance:none; }
+  .campo input:focus, .campo select:focus { box-shadow:0 0 0 2px var(--verde2); }
+  .ck { display:flex; align-items:center; gap:10px; font-size:15px; }
+  .ck input { width:20px; height:20px; accent-color:var(--verde); }
+  .fotos { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .fotos img { width:64px; height:64px; object-fit:cover; border-radius:14px; }
+  .btFoto { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:15px; border-radius:18px; font-weight:600;
+            background:var(--claro); color:var(--verde); }
+  .btPri { width:100%; background:var(--verde); color:#f4f3ee; font-weight:600; padding:16px; border-radius:18px; }
+  .btPri:disabled, .btFoto:disabled { opacity:.5; }
+  #resp, #respM, #respV { font-size:14px; color:var(--sub); min-height:20px; }
+  .err { color:var(--neg) !important; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; }
+  .chips button { padding:7px 12px; border-radius:12px; font-size:12px; font-weight:500; color:var(--verde); background:var(--claro); }
+  .atual { position:fixed; top:calc(var(--topo) + 8px); left:50%; transform:translateX(-50%); font-size:12px; color:var(--sub);
+           padding:5px 12px; border-radius:12px; display:none; z-index:20; }
+  button:focus-visible, select:focus-visible { outline:2px solid var(--verde2); outline-offset:2px; }
+  @media (prefers-reduced-motion:reduce) { .tela.on, .folha .painel { animation:none; } #entrada { transition:none; } }
+</style>
+</head>
+<body>
+
+<div id="entrada">
+  <div class="marca"><i>A</i>Abastece <span style="opacity:.55">· by ESSI</span></div>
+  <div class="moeda"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14M3 20h12M4 10h10M14 8h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg></div>
+  <div>
+    <h1>Cada litro,<br><span>cada quilômetro.</span></h1>
+    <p>Foto da bomba e do painel. O resto é com a gente.</p>
+  </div>
+  <div><input id="chave" placeholder="Chave do app" autocomplete="off"><div class="erro" id="erroEnt"></div>
+    <button id="btEntrar">Começar <svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+</div>
+
+<div class="atual vidro" id="atual">Atualizando…</div>
+
+<section class="tela on" id="t-inicio"><div class="wrap">
+  <div class="cab"><div><h2 id="ola"></h2><div class="sub" id="kmAtual"></div></div>
+    <select class="veic" id="veiculo" aria-label="Veículo"></select></div>
+  <div class="saldo"><div class="rot">Consumo do último trecho</div><div class="hero" id="kml">-- <small>km/l</small></div>
+    <svg class="sp" id="spark" viewBox="0 0 300 46" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <div class="linha2"><span id="trecho">Aparece no 2º abastecimento com tanque cheio.</span><span class="pill" id="var" hidden></span></div></div>
+  <div class="g3">
+    <div class="card"><div class="rot">Média</div><div class="val" id="avg">--</div></div>
+    <div class="card"><div class="rot">Custo/km</div><div class="val" id="rkm">--</div></div>
+    <div class="card"><div class="rot">Último R$/l</div><div class="val" id="rl">--</div></div>
+  </div>
+  <div id="alertas" style="display:grid;gap:10px"></div>
+  <div><div class="cab" style="margin:0 4px 10px"><h2>Últimos abastecimentos</h2><button class="linkBt" data-ir="hist">Ver tudo →</button></div>
+    <div class="lista" id="ultimos"></div></div>
+</div></section>
+
+<section class="tela" id="t-hist"><div class="wrap">
+  <div class="cab"><h1>Histórico</h1></div>
+  <div id="hist"></div>
+</div></section>
+
+<section class="tela" id="t-manut"><div class="wrap">
+  <div class="cab"><h1>Manutenção</h1><button class="linkBt" id="novaManut">+ Adicionar</button></div>
+  <div class="lista" id="manut"></div>
+  <div class="sub" style="padding:0 4px">Toque num item para registrar que fez a troca. O aviso conta a partir do km do último abastecimento.</div>
+</div></section>
+
+<section class="tela" id="t-rel"><div class="wrap">
+  <div class="cab"><h1>Resumo</h1></div>
+  <div class="g2">
+    <div class="card"><div class="rot">Gasto no mês</div><div class="val" id="gMes">--</div><div class="sub" id="gMesSub"></div></div>
+    <div class="card"><div class="rot">Gasto total</div><div class="val" id="gTot">--</div><div class="sub" id="gTotSub"></div></div>
+  </div>
+  <div class="card"><h2>Gasto com combustível por mês</h2><div class="barras" id="meses"></div></div>
+  <div class="card"><h2>Por combustível</h2><div class="sub">Média dos trechos rodados com cada um.</div><div class="comb" id="comb"></div></div>
+  <div class="card"><h2>Veículos</h2><div id="veics"></div><button class="btFoto" id="novoVeic" style="margin-top:12px">+ Adicionar veículo</button></div>
+  <button class="linkBt" id="sair" style="justify-self:center">Sair deste aparelho</button>
+</div></section>
+
+<nav>
+  <button data-t="inicio" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Início</button>
+  <button data-t="hist"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Histórico</button>
+  <button id="mais" data-novo aria-label="Novo abastecimento"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button data-t="manut"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>Manutenção</button>
+  <button data-t="rel"><svg class="i" viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>Resumo</button>
+</nav>
+
+<div class="folha" id="fAbast"><div class="painel vidro">
+  <div class="cab" style="margin:0"><h1 style="font-size:22px">Novo abastecimento</h1><button class="linkBt" data-fechar>Fechar</button></div>
+  <input type="file" id="arq" accept="image/*" multiple hidden>
+  <button class="btFoto" id="btFoto"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Fotos da bomba e do painel</button>
+  <div class="fotos" id="prev"></div>
+  <div id="resp"></div>
+  <div class="g2">
+    <label class="campo">Km no painel<input id="fKm" type="number" inputmode="numeric" step="1"></label>
+    <label class="campo">Litros<input id="fLitros" type="number" inputmode="decimal" step="0.001"></label>
+    <label class="campo">Valor pago (R$)<input id="fValor" type="number" inputmode="decimal" step="0.01"></label>
+    <label class="campo">Data<input id="fData" type="date"></label>
+  </div>
+  <label class="campo">Combustível<select id="fComb"><option>Gasolina comum</option><option>Gasolina aditivada</option><option>Etanol</option><option>Outro</option></select></label>
+  <label class="ck"><input type="checkbox" id="fCheio" checked> Enchi o tanque</label>
+  <button class="btPri" id="salvar">Salvar</button>
+</div></div>
+
+<div class="folha" id="fManut"><div class="painel vidro">
+  <div class="cab" style="margin:0"><h1 style="font-size:22px" id="mTit">Nova manutenção</h1><button class="linkBt" data-fechar>Fechar</button></div>
+  <label class="campo">Item<input id="mItem" placeholder="Ex.: Troca de óleo"></label>
+  <div class="chips" id="mSug"><button>Troca de óleo</button><button>Filtro de ar</button><button>Pneu dianteiro</button><button>Pneu traseiro</button><button>Correia</button><button>Pastilha de freio</button></div>
+  <div class="g2">
+    <label class="campo">Trocar a cada (km)<input id="mInt" type="number" inputmode="numeric"></label>
+    <label class="campo">Feita no km<input id="mKm" type="number" inputmode="numeric"></label>
+    <label class="campo">Data<input id="mData" type="date"></label>
+    <label class="campo">Valor (R$)<input id="mValor" type="number" inputmode="decimal" step="0.01"></label>
+  </div>
+  <div id="respM"></div>
+  <button class="btPri" id="salvarM">Salvar</button>
+  <button class="linkBt" id="apagarM" style="justify-self:center" hidden>Apagar item</button>
+</div></div>
+
+<div class="folha" id="fVeic"><div class="painel vidro">
+  <div class="cab" style="margin:0"><h1 style="font-size:22px">Novo veículo</h1><button class="linkBt" data-fechar>Fechar</button></div>
+  <label class="campo">Nome<input id="vNome" placeholder="Ex.: Honda Elite 125"></label>
+  <div class="g2">
+    <label class="campo">Tipo<select id="vTipo"><option>Moto</option><option>Carro</option><option>Outro</option></select></label>
+    <label class="campo">Ano<input id="vAno" placeholder="2020/21"></label>
+  </div>
+  <div id="respV"></div>
+  <button class="btPri" id="salvarV">Salvar veículo</button>
+</div></div>
+
+<script>
+// Depois de publicar o Apps Script (Implantar > App da Web), cole aqui a URL que termina em /exec
+const API = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+const $ = id => document.getElementById(id);
+const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+             set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const num = (v, d = 1) => v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+const hoje = () => new Date().toLocaleDateString("sv-SE");
+const dataBR = s => s ? new Date(s + "T12:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }).replace(".", "") : "";
+const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+const hashK = (location.hash.match(/k=([^&]+)/) || [])[1];
+if (hashK) { ls.set("k", decodeURIComponent(hashK)); history.replaceState(null, "", location.pathname); }
+let KEY = ls.get("k"), D = { veiculos: [], abastecimentos: [], manutencao: [] }, atual = ls.get("veiculo"), imagens = [], editManut = null;
+
+// Apps Script: corpo text/plain evita a checagem de CORS do navegador
+async function api(corpo) {
+  const r = await fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ k: KEY, ...corpo }) });
+  const j = await r.json();
+  if (j.erro) throw new Error(j.erro);
+  return j;
+}
+
+// ---------- Cálculos ----------
+// Consumo entre dois tanques cheios; parciais no meio somam litros e valor no trecho
+function trechos(lista) {
+  const s = [...lista].sort((a, b) => a.km - b.km), out = [];
+  let ini = null, lit = 0, val = 0;
+  for (const f of s) {
+    if (ini) { lit += f.litros; val += f.valor; }
+    if (f.tanqueCheio) {
+      if (ini && lit > 0 && f.km > ini.km) out.push({ fim: f, ini, km: f.km - ini.km, litros: lit, valor: val, kml: (f.km - ini.km) / lit });
+      ini = f; lit = 0; val = 0;
+    }
+  }
+  return out;
+}
+const doVeic = xs => xs.filter(x => x.veiculoId === atual);
+const kmAtual = () => Math.max(0, ...doVeic(D.abastecimentos).map(f => f.km));
+
+// ---------- Telas ----------
+function render() {
+  if (!D.veiculos.find(v => v.id === atual)) atual = D.veiculos[0]?.id || null;
+  const sel = $("veiculo");
+  sel.innerHTML = D.veiculos.map(v => `<option value="${v.id}">${esc(v.nome)}</option>`).join("") + `<option value="__novo">+ Adicionar veículo</option>`;
+  if (atual) sel.value = atual;
+  const h = new Date().getHours();
+  $("ola").textContent = (h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite") + ", Thalisson";
+  const km = kmAtual();
+  $("kmAtual").textContent = km ? `${num(km, 0)} km no painel` : "Nenhum abastecimento ainda";
+
+  const ab = doVeic(D.abastecimentos), tr = trechos(ab), ult = tr[tr.length - 1], ant = tr[tr.length - 2];
+  $("kml").innerHTML = `${ult ? num(ult.kml) : "--"} <small>km/l</small>`;
+  $("trecho").textContent = ult ? `${num(ult.km, 0)} km com ${num(ult.litros, 2)} l` : "Aparece no 2º abastecimento com tanque cheio.";
+  $("var").hidden = !(ult && ant);
+  if (ult && ant) { const d = ult.kml - ant.kml; $("var").textContent = (d >= 0 ? "▲ " : "▼ ") + num(Math.abs(d)) + " km/l"; }
+  const kmT = tr.reduce((a, t) => a + t.km, 0), lT = tr.reduce((a, t) => a + t.litros, 0), vT = tr.reduce((a, t) => a + t.valor, 0);
+  $("avg").textContent = lT ? num(kmT / lT) : "--";
+  $("rkm").textContent = kmT ? brl(vT / kmT) : "--";
+  const porData = [...ab].sort((a, b) => b.data.localeCompare(a.data) || b.km - a.km);
+  $("rl").textContent = porData[0] ? brl(porData[0].valor / porData[0].litros) : "--";
+
+  const sp = $("spark");
+  if (tr.length > 1) {
+    const ys = tr.slice(-12).map(t => t.kml), mn = Math.min(...ys), mx = Math.max(...ys), r = (mx - mn) || 1;
+    const pts = ys.map((y, i) => [i * 300 / (ys.length - 1), 40 - (y - mn) / r * 34]), e = pts[pts.length - 1], l = pts.map(p => p.join(",")).join(" ");
+    sp.innerHTML = `<polygon points="0,46 ${l} 300,46" fill="#fff" opacity=".12"/><polyline points="${l}" fill="none" stroke="#f4f3ee" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${e[0]}" cy="${e[1]}" r="3.5" fill="#f4f3ee"/>`;
+    sp.style.display = "";
+  } else sp.style.display = "none";
+
+  const kmlDe = Object.fromEntries(tr.map(t => [t.fim.id, t.kml]));
+  const linha = f => `<div class="item"><div class="ico">${f.combustivel === "Etanol" ? "ETA" : f.combustivel === "Gasolina aditivada" ? "ADT" : "GAS"}</div>
+    <div class="meio"><b>${num(f.km, 0)} km${f.tanqueCheio ? "" : '<span class="tag">parcial</span>'}</b><small>${dataBR(f.data)} · ${num(f.litros, 2)} l · ${brl(f.valor / f.litros)}/l${f.fotos.length ? " · 📷" : ""}</small></div>
+    <div class="dir"><span class="v">${brl(f.valor)}</span><small>${kmlDe[f.id] ? num(kmlDe[f.id]) + " km/l" : ""}</small></div></div>`;
+  $("ultimos").innerHTML = porData.slice(0, 4).map(linha).join("") || `<div class="vazio">Toque em + e mande a foto da bomba e do painel.</div>`;
+
+  const porMes = {};
+  porData.forEach(f => (porMes[f.data.slice(0, 7)] ||= []).push(f));
+  $("hist").innerHTML = Object.entries(porMes).map(([m, xs]) => `<div class="dia">${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)} · ${brl(xs.reduce((a, f) => a + f.valor, 0))}</div>` +
+    `<div class="lista">${xs.map(f => linha(f).replace('<div class="item">', `<div class="item" data-ab="${f.id}">`)).join("")}</div>`).join("")
+    || `<div class="vazio">Nenhum abastecimento ainda.</div>`;
+
+  // manutenção
+  const mn = doVeic(D.manutencao).map(m => ({ ...m, prox: m.ultimoKm + m.intervaloKm, falta: m.intervaloKm ? m.ultimoKm + m.intervaloKm - km : null }))
+    .sort((a, b) => (a.falta ?? 1e9) - (b.falta ?? 1e9));
+  $("manut").innerHTML = mn.map(m => {
+    const pct = m.intervaloKm ? Math.min(100, Math.max(0, (km - m.ultimoKm) / m.intervaloKm * 100)) : 0;
+    const cls = m.falta == null ? "" : m.falta < 0 ? "atr" : m.falta <= m.intervaloKm * .15 ? "alerta" : "";
+    const tag = m.falta == null ? "" : m.falta < 0 ? `<span class="tag atr">atrasada</span>` : cls ? `<span class="tag">em breve</span>` : `<span class="tag ok">em dia</span>`;
+    return `<div class="item" data-m="${m.id}" style="cursor:pointer"><div class="meio"><b>${esc(m.item)}${tag}</b>
+      <small>${m.intervaloKm ? (m.falta < 0 ? `Passou ${num(-m.falta, 0)} km` : `Faltam ${num(m.falta, 0)} km`) + ` · próxima em ${num(m.prox, 0)} km` : "Sem intervalo definido"}</small>
+      ${m.intervaloKm ? `<div class="barra"><i class="${cls}" style="width:${pct}%"></i></div>` : ""}</div></div>`;
+  }).join("") || `<div class="vazio">Cadastre a troca de óleo e o resto que você acompanha.</div>`;
+  $("alertas").innerHTML = mn.filter(m => m.falta != null && m.falta <= m.intervaloKm * .15).slice(0, 2).map(m =>
+    `<button class="dica ${m.falta < 0 ? "atr" : ""}" data-ir="manut" style="text-align:left"><svg class="i" viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    <div><b>${esc(m.item)}</b><small>${m.falta < 0 ? `Passou ${num(-m.falta, 0)} km do previsto` : `Faltam ${num(m.falta, 0)} km`}</small></div></button>`).join("");
+
+  // resumo
+  const mesAt = hoje().slice(0, 7), doMes = ab.filter(f => f.data.startsWith(mesAt));
+  $("gMes").textContent = brl(doMes.reduce((a, f) => a + f.valor, 0));
+  $("gMesSub").textContent = `${doMes.length} abastecimento${doMes.length === 1 ? "" : "s"} · ${num(doMes.reduce((a, f) => a + f.litros, 0), 1)} l`;
+  $("gTot").textContent = brl(ab.reduce((a, f) => a + f.valor, 0));
+  $("gTotSub").textContent = kmT ? `${num(kmT, 0)} km calculados` : "";
+  const ult6 = [...Array(6)].map((_, i) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 5 + i); return d.toLocaleDateString("sv-SE").slice(0, 7); });
+  const gm = ult6.map(m => ab.filter(f => f.data.startsWith(m)).reduce((a, f) => a + f.valor, 0)), mx = Math.max(1, ...gm);
+  $("meses").innerHTML = ult6.map((m, i) => `<div><i class="${i === 5 ? "on" : ""}" style="height:${gm[i] / mx * 100}%" title="${brl(gm[i])}"></i><span>${MESES[+m.slice(5) - 1]}</span></div>`).join("");
+  // o trecho é rodado com o combustível que entrou no início dele
+  const pc = {};
+  tr.forEach(t => { const c = pc[t.ini.combustivel] ||= { km: 0, l: 0, v: 0 }; c.km += t.km; c.l += t.litros; c.v += t.valor; });
+  $("comb").innerHTML = Object.keys(pc).length ? `<span style="text-align:left">Combustível</span><span>km/l</span><span>R$/km</span>` +
+    Object.entries(pc).map(([n, c]) => `<div>${esc(n)}</div><b>${num(c.km / c.l)}</b><b>${brl(c.v / c.km)}</b>`).join("") : `<div class="sub">Ainda sem trechos calculados.</div>`;
+  $("veics").innerHTML = D.veiculos.map(v => `<div class="item"><div class="ico">${v.tipo === "Carro" ? "CAR" : "MOTO"}</div><div class="meio"><b>${esc(v.nome)}</b><small>${esc(v.tipo)}${v.ano ? " · " + esc(v.ano) : ""}</small></div></div>`).join("");
+}
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- Navegação ----------
+function ir(t) {
+  document.querySelectorAll(".tela").forEach(s => s.classList.toggle("on", s.id === "t-" + t));
+  document.querySelectorAll("nav [data-t]").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-t],[data-ir],[data-novo],[data-fechar],[data-m]");
+  if (!b) return;
+  if (b.dataset.t || b.dataset.ir) ir(b.dataset.t || b.dataset.ir);
+  if (b.hasAttribute("data-novo")) abrirAbast();
+  if (b.hasAttribute("data-fechar")) b.closest(".folha").classList.remove("on");
+  if (b.dataset.m) abrirManut(D.manutencao.find(m => m.id === b.dataset.m));
+});
+document.querySelectorAll(".folha").forEach(f => f.addEventListener("click", e => { if (e.target === f) f.classList.remove("on"); }));
+$("veiculo").onchange = e => {
+  if (e.target.value === "__novo") { e.target.value = atual || ""; return abrirVeic(); }
+  atual = e.target.value; ls.set("veiculo", atual); render();
+};
+
+// ---------- Novo abastecimento ----------
+function abrirAbast() {
+  if (!atual) return abrirVeic();
+  imagens = []; $("prev").innerHTML = ""; $("resp").textContent = ""; $("resp").className = "";
+  ["fKm", "fLitros", "fValor"].forEach(i => $(i).value = "");
+  $("fData").value = hoje(); $("fCheio").checked = true;
+  const ult = [...doVeic(D.abastecimentos)].sort((a, b) => b.km - a.km)[0];
+  $("fComb").value = ult?.combustivel || "Gasolina comum";
+  $("fAbast").classList.add("on");
+}
+$("btFoto").onclick = () => $("arq").click();
+
+// reduz a foto (1280px, jpeg): menos dados no 4G e na conta da IA
+function reduz(file) {
+  return new Promise((ok, no) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1280 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      ok(c.toDataURL("image/jpeg", .82));
+    };
+    img.onerror = () => no(new Error("Não consegui abrir essa foto."));
+    img.src = url;
+  });
+}
+$("arq").onchange = async e => {
+  const fs = [...e.target.files].slice(0, 3); e.target.value = "";
+  if (!fs.length) return;
+  const r = $("resp"); r.className = ""; r.textContent = "Preparando fotos…";
+  try { imagens = await Promise.all(fs.map(reduz)); } catch (err) { r.className = "err"; r.textContent = err.message; return; }
+  $("prev").innerHTML = imagens.map(s => `<img src="${s}" alt="Foto do abastecimento">`).join("");
+  r.textContent = "Lendo as fotos…"; $("salvar").disabled = $("btFoto").disabled = true;
+  try {
+    const x = await api({ ler: { veiculoId: atual, imagens: imagens.map(s => s.split(",")[1]) } });
+    if (x.km != null) $("fKm").value = x.km;
+    if (x.litros != null) $("fLitros").value = x.litros;
+    if (x.valor != null) $("fValor").value = x.valor;
+    if (x.combustivel) $("fComb").value = x.combustivel;
+    const falta = [["fKm", "km"], ["fLitros", "litros"], ["fValor", "valor"]].filter(([i]) => !$(i).value).map(f => f[1]);
+    r.textContent = "Confira os números antes de salvar." + (falta.length ? ` Não achei: ${falta.join(", ")}.` : "") + (x.obs ? " " + x.obs : "");
+  } catch (err) { r.className = "err"; r.textContent = "Não consegui ler as fotos (" + err.message + "). Preencha à mão."; }
+  $("salvar").disabled = $("btFoto").disabled = false;
+};
+$("salvar").onclick = async () => {
+  const km = +$("fKm").value, litros = +$("fLitros").value, valor = +$("fValor").value, r = $("resp");
+  if (!(km > 0 && litros > 0 && valor > 0)) { r.className = "err"; r.textContent = "Preencha km, litros e valor."; return; }
+  const ant = Math.max(0, ...doVeic(D.abastecimentos).map(f => f.km));
+  if (km <= ant && r.dataset.conf !== "1") { r.className = "err"; r.textContent = `O km é menor que o último (${num(ant, 0)}). Toque em Salvar de novo se estiver certo.`; r.dataset.conf = "1"; return; }
+  delete r.dataset.conf;
+  $("salvar").disabled = true; $("salvar").textContent = "Salvando…";
+  try {
+    D = await api({ abastecimento: { veiculoId: atual, km, litros, valor, data: $("fData").value, combustivel: $("fComb").value,
+      tanqueCheio: $("fCheio").checked, imagens: imagens.map(s => s.split(",")[1]) } });
+    $("fAbast").classList.remove("on"); render(); ir("inicio");
+  } catch (err) { r.className = "err"; r.textContent = "Não salvou: " + err.message; }
+  $("salvar").disabled = false; $("salvar").textContent = "Salvar";
+};
+// apagar abastecimento: toque duas vezes no item do histórico
+$("hist").addEventListener("click", async e => {
+  const it = e.target.closest("[data-ab]"); if (!it) return;
+  if (it.dataset.conf !== "1") {
+    document.querySelectorAll("[data-ab]").forEach(x => { delete x.dataset.conf; x.style.background = ""; });
+    it.dataset.conf = "1"; it.style.background = "#fbe3e0";
+    it.querySelector(".dir small").textContent = "Toque de novo p/ apagar"; return;
+  }
+  try { D = await api({ apagar: it.dataset.ab }); render(); } catch (err) { alertaTopo(err.message); }
+});
+
+// ---------- Manutenção ----------
+function abrirManut(m) {
+  editManut = m || null;
+  $("mTit").textContent = m ? m.item : "Nova manutenção";
+  $("mItem").value = m?.item || ""; $("mInt").value = m?.intervaloKm || "";
+  $("mKm").value = m ? kmAtual() || m.ultimoKm : kmAtual() || "";
+  $("mData").value = hoje(); $("mValor").value = "";
+  $("respM").className = ""; $("respM").textContent = m ? `Última: ${num(m.ultimoKm, 0)} km${m.ultimaData ? " em " + dataBR(m.ultimaData) : ""}. Salve para registrar a troca de hoje.` : "";
+  $("mSug").hidden = !!m; $("apagarM").hidden = !m; delete $("apagarM").dataset.conf; $("apagarM").textContent = "Apagar item";
+  $("fManut").classList.add("on");
+}
+$("novaManut").onclick = () => atual ? abrirManut() : abrirVeic();
+$("mSug").onclick = e => { if (e.target.tagName === "BUTTON") $("mItem").value = e.target.textContent; };
+$("salvarM").onclick = async () => {
+  const r = $("respM");
+  if (!$("mItem").value.trim()) { r.className = "err"; r.textContent = "Dê um nome à manutenção."; return; }
+  $("salvarM").disabled = true;
+  try {
+    D = await api({ manut: { id: editManut?.id, veiculoId: atual, item: $("mItem").value, intervaloKm: +$("mInt").value, ultimoKm: +$("mKm").value,
+      ultimaData: $("mData").value, valor: +$("mValor").value } });
+    $("fManut").classList.remove("on"); render();
+  } catch (err) { r.className = "err"; r.textContent = "Não salvou: " + err.message; }
+  $("salvarM").disabled = false;
+};
+$("apagarM").onclick = async () => {
+  const b = $("apagarM");
+  if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "Toque de novo para apagar"; b.style.color = "var(--neg)"; return; }
+  try { D = await api({ apagarManut: editManut.id }); $("fManut").classList.remove("on"); render(); } catch (err) { $("respM").className = "err"; $("respM").textContent = err.message; }
+  b.style.color = "";
+};
+
+// ---------- Veículos ----------
+function abrirVeic() { $("vNome").value = ""; $("vAno").value = ""; $("respV").textContent = ""; $("fVeic").classList.add("on"); }
+$("novoVeic").onclick = abrirVeic;
+$("salvarV").onclick = async () => {
+  const r = $("respV");
+  if (!$("vNome").value.trim()) { r.className = "err"; r.textContent = "Dê um nome ao veículo."; return; }
+  const antes = new Set(D.veiculos.map(v => v.id));
+  try {
+    D = await api({ veiculo: { nome: $("vNome").value, tipo: $("vTipo").value, ano: $("vAno").value } });
+    atual = D.veiculos.find(v => !antes.has(v.id))?.id || atual; ls.set("veiculo", atual);
+    $("fVeic").classList.remove("on"); render();
+  } catch (err) { r.className = "err"; r.textContent = "Não salvou: " + err.message; }
+};
+
+// ---------- Entrada e carga ----------
+function alertaTopo(t) { const a = $("atual"); a.textContent = t; a.style.display = "block"; clearTimeout(a._t); a._t = setTimeout(() => a.style.display = "none", 3000); }
+async function carregar() {
+  const a = $("atual"); a.textContent = "Atualizando…"; a.style.display = "block";
+  try {
+    D = await api({});
+    try { ls.set("cache", JSON.stringify(D)); } catch (e) {}
+    $("entrada").classList.add("sai"); render(); a.style.display = "none";
+  } catch (err) {
+    a.style.display = "none";
+    if (/negado/.test(err.message)) { KEY = null; ls.set("k", null); $("entrada").classList.remove("sai"); $("erroEnt").textContent = "Chave incorreta."; }
+    else alertaTopo("Sem conexão. Mostrando os últimos dados.");
+  }
+}
+$("btEntrar").onclick = () => {
+  const v = $("chave").value.trim();
+  if (!v) { $("erroEnt").textContent = "Cole a chave que aparece no Apps Script."; return; }
+  KEY = v; ls.set("k", v); $("erroEnt").textContent = ""; carregar();
+};
+$("sair").onclick = () => { ls.set("k", null); ls.set("cache", null); KEY = null; $("entrada").classList.remove("sai"); };
+
+try { const c = JSON.parse(ls.get("cache")); if (c && c.veiculos) D = c; } catch (e) {}
+if (KEY) { if (D.veiculos.length) { $("entrada").classList.add("sai"); render(); } carregar(); }
+document.addEventListener("visibilitychange", () => { if (!document.hidden && KEY) carregar(); });
+</script>
+</body>
+</html>

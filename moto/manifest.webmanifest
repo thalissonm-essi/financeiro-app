@@ -1,0 +1,9 @@
+{
+  "name": "Abastece",
+  "short_name": "Abastece",
+  "display": "standalone",
+  "background_color": "#d9520b",
+  "theme_color": "#d9520b",
+  "start_url": "./",
+  "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }]
+}
