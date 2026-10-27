@@ -124,7 +124,7 @@ function limite_(nome, max) {
 }
 
 // ---------- Rodar 1x no editor ----------
-// Cria as abas, a chave do app e já traz a Elite e os 2 primeiros abastecimentos.
+// Cria as abas, a chave do app e já traz a Elite e os 3 primeiros abastecimentos.
 function ativar() {
   const ss = SpreadsheetApp.getActive();
   Object.entries(ABAS).forEach(([nome, cab]) => {
@@ -139,6 +139,7 @@ function ativar() {
     aba("VEICULOS").appendRow(["elite125", "Honda Elite 125", "Moto", "2020/21", new Date()]);
     aba("ABASTECIMENTOS").appendRow(["a-55020", "elite125", new Date(2026, 9, 18), 55020, 4.85, 29.54, 6.091, "Gasolina comum", "Sim", ""]);
     aba("ABASTECIMENTOS").appendRow(["a-55182", "elite125", new Date(2026, 9, 23), 55182, 4.80, 28.18, 5.871, "Gasolina comum", "Sim", ""]);
+    aba("ABASTECIMENTOS").appendRow(["a-55335", "elite125", new Date(2026, 9, 27), 55335, 4.557, 27.30, 5.99, "Gasolina comum", "Sim", ""]);
   }
   DriveApp.getRootFolder();  // pede a permissão do Drive agora, não na primeira foto
   Logger.log("Chave do app: " + cfg("MOTO_KEY"));
