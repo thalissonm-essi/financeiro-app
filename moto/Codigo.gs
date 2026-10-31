@@ -141,6 +141,7 @@ function ativar() {
     aba("ABASTECIMENTOS").appendRow(["a-55182", "elite125", new Date(2026, 9, 23), 55182, 4.80, 28.18, 5.871, "Gasolina comum", "Sim", ""]);
     aba("ABASTECIMENTOS").appendRow(["a-55335", "elite125", new Date(2026, 9, 27), 55335, 4.557, 27.30, 5.99, "Gasolina comum", "Sim", ""]);
     aba("ABASTECIMENTOS").appendRow(["a-55472", "elite125", new Date(2026, 9, 29), 55472, 4.103, 24.08, 5.869, "Gasolina comum", "Sim", ""]);
+    aba("ABASTECIMENTOS").appendRow(["a-55584", "elite125", new Date(2026, 9, 31), 55584, 3.45, 20.25, 5.87, "Gasolina comum", "Sim", ""]);
   }
   DriveApp.getRootFolder();  // pede a permissão do Drive agora, não na primeira foto
   Logger.log("Chave do app: " + cfg("MOTO_KEY"));
